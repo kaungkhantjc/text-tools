@@ -40,11 +40,11 @@
         const updateThemeIcon = (theme) => {
             const themeIcon = document.getElementById("themeIcon");
             if (theme == 'dark') {
-                themeIcon.classList.remove('bi-moon-stars-fill');
-                themeIcon.classList.add('bi-sun-fill');
-            } else {
                 themeIcon.classList.remove('bi-sun-fill');
                 themeIcon.classList.add('bi-moon-stars-fill');
+            } else {
+                themeIcon.classList.remove('bi-moon-stars-fill');
+                themeIcon.classList.add('bi-sun-fill');
             }
         }
 
@@ -59,89 +59,81 @@
 </head>
 
 <body>
-    <nav style="user-select: none;" class="navbar navbar-expand-lg bg-primary sticky-top">
+    <nav style="user-select: none;" class="navbar navbar-expand-md bg-primary sticky-top">
         <div class="container-fluid">
-            <div style="min-width: 13rem; min-height: 2rem;" id="toolName"
-                class="text-center px-3 py-1 text-white me-2 fs-5"></div>
-            <button class="btn btn-primary d-lg-none px-2 py-0" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <i class="bi bi-list text-white" style="font-size: 30px;"></i>
-            </button>
+            <div style="min-width: 10rem; min-height: 2rem;" id="toolName" class="px-3 py-1 text-white me-2 fs-5"></div>
+            <div>
+                <button class="btn btn-primary d-md-none" data-clipboard-target="#textOutput">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+                <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <i class="bi bi-three-dots-vertical text-white"></i>
+                </button>
+            </div>
+            
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 px-3">
                     <li class="nav-item dropdown">
                         <div class="text-white nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            Base64
+                            Encoders / Decoders
                         </div>
                         <ul class="dropdown-menu">
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('Base64', 'Encode')">Encode</div>
+                                <div class="dropdown-item" onclick="changeTool('Base64', 'Encode')">Base64 Encode</div>
                             </li>
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('Base64', 'Decode')">Decode</div>
+                                <div class="dropdown-item" onclick="changeTool('Base64', 'Decode')">Base64 Decode</div>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('Binary', 'Encode')">Binary Encode</div>
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('Binary', 'Decode')">Binary Decode</div>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('Hex', 'Encode')">Hex Encode</div>
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('Hex', 'Decode')">Hex Decode</div>
                             </li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <div class="text-white nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            Binary
+                            Encryptors / Decryptors
                         </div>
                         <ul class="dropdown-menu">
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('Binary', 'Encode')">Encode</div>
+                                <div class="dropdown-item" onclick="changeTool('Base64 Xor', 'Encode')">Base64 Xor
+                                    Encode</div>
                             </li>
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('Binary', 'Decode')">Decode</div>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <div class="text-white nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Hex
-                        </div>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <div class="dropdown-item" onclick="changeTool('Hex', 'Encode')">Encode</div>
+                                <div class="dropdown-item" onclick="changeTool('Base64 Xor', 'Decode')">Base64 Xor
+                                    Decode</div>
                             </li>
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('Hex', 'Decode')">Decode</div>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <div class="text-white nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Base64 Xor
-                        </div>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <div class="dropdown-item" onclick="changeTool('Base64 Xor', 'Encode')">Encode</div>
+                                <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('Base64 Xor', 'Decode')">Decode</div>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <div class="text-white nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            AES256
-                        </div>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <div class="dropdown-item" onclick="changeTool('AES256', 'Encode')">Encode</div>
+                                <div class="dropdown-item" onclick="changeTool('AES256', 'Encode')">AES256 Encode</div>
                             </li>
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('AES256', 'Decode')">Decode</div>
+                                <div class="dropdown-item" onclick="changeTool('AES256', 'Decode')">AES256 Decode</div>
                             </li>
                         </ul>
                     </li>
                 </ul>
-                <button class="btn btn-primary" data-clipboard-target="#textOutput">
+                <button class="btn btn-primary d-none d-md-block" data-clipboard-target="#textOutput">
                     <i class="bi bi-clipboard"></i>
                 </button>
                 <a class="ms-2 btn btn-primary" target="_blank" href="https://github.com/kaungkhantjc/text-tools">
@@ -241,6 +233,15 @@
             return back;
         }
 
+    </script>
+
+    <script type="text/javascript">
+        const navLinks = document.querySelectorAll('div#navbarSupportedContent .nav-item .dropdown-item');
+        const menuToggle = document.getElementById('navbarSupportedContent');
+        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(menuToggle, { toggle: false });
+        navLinks.forEach((l) => {
+            l.addEventListener('click', () => { bsCollapse.hide() })
+        });
     </script>
 
     <script type="text/javascript">
