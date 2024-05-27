@@ -248,6 +248,7 @@
         const changeTheme = () => {
             theme = theme == 'light' ? 'dark' : 'light';
             setTheme(theme);
+            updateThemeIcon(theme);
         }
 
         const toastBoxTextCopied = document.getElementById('toastBoxTextCopied');
