@@ -164,12 +164,15 @@
                 <div>
                     <textarea placeholder="Input text" spellcheck="false" class="form-control" id="textInput"
                         rows="16"></textarea>
-                    <div id="textLinesAndChars" class="font-monospace mx-1 my-2">1 lines, 0 characters</div>
+                    <div id="inputTextLinesAndChars" class="font-monospace mx-1 my-2">1 lines, 0 characters</div>
                 </div>
             </div>
             <div class="col-md-6">
-                <textarea placeholder="Output text" spellcheck="false" class="form-control" id="textOutput"
+                <div>
+                    <textarea placeholder="Output text" spellcheck="false" class="form-control" id="textOutput"
                     rows="16"></textarea>
+                    <div id="outputTextLinesAndChars" class="font-monospace mx-1 my-2">1 lines, 0 characters</div>
+                </div>
             </div>
         </div>
 
@@ -269,12 +272,14 @@
         const textPassword = document.getElementById("textPassword");
         const textOutput = document.getElementById("textOutput");
         const boxPassword = document.getElementById("boxPassword");
-        const textLinesAndChars = document.getElementById("textLinesAndChars");
+        const inputTextLinesAndChars = document.getElementById("inputTextLinesAndChars");
+        const outputTextLinesAndChars = document.getElementById("outputTextLinesAndChars");
 
         let currentTool = null;
         let currentMode = null;
 
         const getInputText = () => textInput.value;
+        const getOutputText = () => textOutput.value;
         const getPassword = () => textPassword.value;
         const getStoredPassword = () => localStorage.getItem(`password_for_${currentTool}`);
         const getTool = () => localStorage.getItem('tool') ?? "Base64";
@@ -289,16 +294,16 @@
             localStorage.setItem('tool', currentTool);
             localStorage.setItem('mode', currentMode);
         }
-        const setLinesAndChars = () => {
-            const text = getInputText();
+        const setLinesAndChars = (element, text) => {
             const characters = text.length;
             const lines = text.split('\n').length;
-            textLinesAndChars.innerText = `${lines} lines, ${characters} characters`;
+            element.innerText = `${lines} lines, ${characters} characters`;
         }
 
         const setOutputTextSafely = (func) => {
             try {
                 setOutputText(func());
+                setLinesAndChars(outputTextLinesAndChars, getOutputText());
             } catch (e) {
                 setOutputText(e)
             }
@@ -355,7 +360,7 @@
         }
 
         textInput.addEventListener('input', () => {
-            setLinesAndChars();
+            setLinesAndChars(inputTextLinesAndChars, getInputText());
             processTool();
         });
 
