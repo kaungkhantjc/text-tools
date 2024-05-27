@@ -259,6 +259,9 @@
         clipboard.on('success', (e) => {
             e.clearSelection();
             toastTextCopied.show();
+        })
+        .on('error', () => {
+            textOutput.blur();
         });
 
         const toolName = document.getElementById("toolName");
