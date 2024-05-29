@@ -67,12 +67,12 @@
                     <i class="bi bi-clipboard"></i>
                 </button>
                 <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                     <i class="bi bi-three-dots-vertical text-white"></i>
                 </button>
             </div>
-            
+
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 px-3">
                     <li class="nav-item dropdown">
@@ -104,6 +104,26 @@
                             </li>
                             <li>
                                 <div class="dropdown-item" onclick="changeTool('Hex', 'Decode')">Hex Decode</div>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('URI', 'Encode')">URI Encode</div>
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('URI', 'Decode')">URI Decode</div>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('Unicode', 'Escape')">Unicode Escape
+                                </div>
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('Unicode', 'Unescape')">Unicode Unescape
+                                </div>
                             </li>
                         </ul>
                     </li>
@@ -170,7 +190,7 @@
             <div class="col-md-6">
                 <div>
                     <textarea placeholder="Output text" spellcheck="false" class="form-control" id="textOutput"
-                    rows="16"></textarea>
+                        rows="16"></textarea>
                     <div id="outputTextLinesAndChars" class="font-monospace mx-1 my-2">1 lines, 0 characters</div>
                 </div>
             </div>
@@ -236,6 +256,9 @@
             return back;
         }
 
+        const escapeUnicodeStr = (text) => text.replace(/[^\0-~]/g, (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`);
+        const unescapeUnicodeStr = (text) => text.replace(/\\u([0-9a-f]{4})/g, (whole, group1) => String.fromCharCode(parseInt(group1, 16)));
+
     </script>
 
     <script type="text/javascript">
@@ -262,8 +285,7 @@
         clipboard.on('success', (e) => {
             e.clearSelection();
             toastTextCopied.show();
-        })
-        .on('error', () => {
+        }).on('error', () => {
             textOutput.blur();
         });
 
@@ -319,7 +341,7 @@
             }
 
             setToolAndMode();
-            setPasswordBoxHidden(['Base64', 'Binary', 'Hex'].includes(currentTool));
+            setPasswordBoxHidden(!['Base64 Xor', 'AES256'].includes(currentTool));
             processTool();
         }
 
@@ -347,14 +369,22 @@
                     setOutputTextSafely(() => currentMode == 'Encode' ? encodeHex(inputText) : decodeHex(inputText));
                     break;
 
+                case "URI":
+                    setOutputTextSafely(() => currentMode == 'Encode' ? encodeURIComponent(inputText) : decodeURIComponent(inputText));
+                    break;
+
+                case "Unicode":
+                    setOutputTextSafely(() => currentMode == 'Escape' ? escapeUnicodeStr(inputText) : unescapeUnicodeStr(inputText));
+                    break;
+
                 case "AES256":
                     var password = getPassword();
-                    if (password.length > 0) setOutputTextSafely(() => currentMode == 'Encode' ? encryptAES256(inputText, password) : decryptAES256(inputText, password));
+                    if (password.length > 0) setOutputTextSafely(() => currentMode == 'Encrypt' ? encryptAES256(inputText, password) : decryptAES256(inputText, password));
                     break;
 
                 case "Base64 Xor":
                     var password = getPassword();
-                    if (password.length > 0) setOutputTextSafely(() => currentMode == 'Encode' ? encryptXor(inputText, password) : decryptXor(inputText, password));
+                    if (password.length > 0) setOutputTextSafely(() => currentMode == 'Encrypt' ? encryptXor(inputText, password) : decryptXor(inputText, password));
                     break;
             }
         }
