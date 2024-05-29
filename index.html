@@ -132,6 +132,16 @@
                                 <div class="dropdown-item" onclick="changeTool('Unicode', 'Unescape')">Unicode Unescape
                                 </div>
                             </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('HTML', 'Encode')">HTML Encode</div>
+                            </li>
+                            <li>
+                                <div class="dropdown-item" onclick="changeTool('HTML', 'Decode')">HTML Decode</div>
+                            </li>
+                            <li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -268,6 +278,7 @@
     <script type="text/javascript" src="./assets/js/clipboard.min.js"></script>
     <script type="text/javascript" src="./assets/js/base64.min.js"></script>
     <script type="text/javascript" src="./assets/js/aes256.min.js"></script>
+    <script type="text/javascript" src="./assets/js/he.min.js"></script>
     <script type="text/javascript" src="./assets/js/tools.js"></script>
 
     <script type="text/javascript">
@@ -350,6 +361,10 @@
                     callback = () => currentMode == 'Escape' ? UnicodeStr.escape(inputText) : UnicodeStr.unescape(inputText);
                     break;
 
+                case "HTML":
+                    callback = () => currentMode == 'Encode' ? he.encode(inputText) : he.decode(inputText);
+                    break;
+
                 case "AES256":
                     if (password.length > 0) callback = () => currentMode == 'Encrypt' ? AES256.encrypt(inputText, password) : AES256.decrypt(inputText, password);
                     break;
@@ -362,7 +377,7 @@
             if (callback != null) {
                 setOutputTextSafely(callback);
             }
-            
+
         }
 
         textInput.addEventListener('input', () => {
