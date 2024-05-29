@@ -268,56 +268,7 @@
     <script type="text/javascript" src="./assets/js/clipboard.min.js"></script>
     <script type="text/javascript" src="./assets/js/base64.min.js"></script>
     <script type="text/javascript" src="./assets/js/AES256.min.js"></script>
-
-    <script type="text/javascript">
-        // codes for various tools
-
-        const encodeBase64 = (text) => Base64.encode(text);
-        const decodeBase64 = (text) => Base64.decode(text);
-
-        const textToBinary = (text) => text.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
-        const binaryToText = (binary) => String.fromCharCode(...binary.split(' ').map(byte => parseInt(byte, 2)));
-
-        const encryptAES256 = (text, password) => AES256.encrypt(text, password);
-        const decryptAES256 = (text, password) => AES256.decrypt(text, password);
-
-        const xorString = (text, key) => {
-            let result = '';
-            for (let i = 0; i < text.length; i++) {
-                result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-            }
-            return result;
-        };
-
-        const encryptXor = (text, password) => encodeBase64(xorString(text, password));
-        const decryptXor = (text, password) => xorString(decodeBase64(text), password);
-
-        const encodeHex = (text) => {
-            let hex, i;
-
-            let result = "";
-            for (i = 0; i < text.length; i++) {
-                hex = text.charCodeAt(i).toString(16);
-                result += ("000" + hex).slice(-4);
-            }
-            return result
-        }
-
-        const decodeHex = (text) => {
-            let j;
-            let hexes = text.match(/.{1,4}/g) || [];
-            let back = "";
-            for (j = 0; j < hexes.length; j++) {
-                back += String.fromCharCode(parseInt(hexes[j], 16));
-            }
-
-            return back;
-        }
-
-        const escapeUnicodeStr = (text) => text.replace(/[^\0-~]/g, (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`);
-        const unescapeUnicodeStr = (text) => text.replace(/\\u([0-9a-f]{4})/g, (whole, group1) => String.fromCharCode(parseInt(group1, 16)));
-
-    </script>
+    <script type="text/javascript" src="./assets/js/tools.js"></script>
 
     <script type="text/javascript">
         // For mobile view, collapse navbar when a nav link is clicked
@@ -351,9 +302,9 @@
         * we use try catch with callback function
         * since some tools like AES256 may throw exception
         */
-        const setOutputTextSafely = (func) => {
+        const setOutputTextSafely = (callback) => {
             try {
-                setOutputText(func());
+                setOutputText(callback());
                 setLinesAndChars(outputTextLinesAndChars, getOutputText());
             } catch (e) {
                 setOutputText(e)
@@ -369,43 +320,49 @@
 
         const processTool = () => {
             const inputText = getInputText();
+            const password = getPassword();
 
             if (inputText.length == 0) {
                 setOutputText("");
                 return;
             }
 
+            let callback = null;
+
             switch (currentTool) {
                 case "Base64":
-                    setOutputTextSafely(() => currentMode == 'Encode' ? encodeBase64(inputText) : decodeBase64(inputText));
+                    callback = () => currentMode == 'Encode' ? Base64.encode(inputText) : Base64.decode(inputText);
                     break;
 
                 case "Binary":
-                    setOutputTextSafely(() => currentMode == 'Encode' ? textToBinary(inputText) : binaryToText(inputText));
+                    callback = () => currentMode == 'Encode' ? Binary.encode(inputText) : Binary.decode(inputText);
                     break;
 
                 case "Hex":
-                    setOutputTextSafely(() => currentMode == 'Encode' ? encodeHex(inputText) : decodeHex(inputText));
+                    callback = () => currentMode == 'Encode' ? Hex.encode(inputText) : Hex.decode(inputText);
                     break;
 
                 case "URI":
-                    setOutputTextSafely(() => currentMode == 'Encode' ? encodeURIComponent(inputText) : decodeURIComponent(inputText));
+                    callback = () => currentMode == 'Encode' ? encodeURIComponent(inputText) : decodeURIComponent(inputText);
                     break;
 
                 case "Unicode":
-                    setOutputTextSafely(() => currentMode == 'Escape' ? escapeUnicodeStr(inputText) : unescapeUnicodeStr(inputText));
+                    callback = () => currentMode == 'Escape' ? UnicodeStr.escape(inputText) : UnicodeStr.unescape(inputText);
                     break;
 
                 case "AES256":
-                    var password = getPassword();
-                    if (password.length > 0) setOutputTextSafely(() => currentMode == 'Encrypt' ? encryptAES256(inputText, password) : decryptAES256(inputText, password));
+                    if (password.length > 0) callback = () => currentMode == 'Encrypt' ? AES256.encrypt(inputText, password) : AES256.decrypt(inputText, password);
                     break;
 
                 case "Base64 Xor":
-                    var password = getPassword();
-                    if (password.length > 0) setOutputTextSafely(() => currentMode == 'Encrypt' ? encryptXor(inputText, password) : decryptXor(inputText, password));
+                    if (password.length > 0) callback = () => currentMode == 'Encrypt' ? Base64.encode(Xor.evaluate(inputText, password)) : Xor.evaluate(Base64.decode(inputText), password);
                     break;
             }
+
+            if (callback != null) {
+                setOutputTextSafely(callback);
+            }
+            
         }
 
         textInput.addEventListener('input', () => {
