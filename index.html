@@ -40,11 +40,11 @@
         const updateThemeIcon = (theme) => {
             const themeIcon = document.getElementById("themeIcon");
             if (theme == 'dark') {
-                themeIcon.classList.remove('bi-sun-fill');
-                themeIcon.classList.add('bi-moon-stars-fill');
-            } else {
                 themeIcon.classList.remove('bi-moon-stars-fill');
                 themeIcon.classList.add('bi-sun-fill');
+            } else {
+                themeIcon.classList.remove('bi-sun-fill');
+                themeIcon.classList.add('bi-moon-stars-fill');
             }
         }
 
@@ -61,7 +61,7 @@
 <body>
     <nav style="user-select: none;" class="navbar navbar-expand-md bg-primary sticky-top">
         <div class="container-fluid">
-            <div style="min-width: 10rem; min-height: 2rem;" id="toolName" class="px-3 py-1 text-white me-2 fs-5"></div>
+            <div id="toolName" class="px-3 py-1 text-white me-2 fs-5"></div>
             <div>
                 <button class="btn btn-primary d-md-none" data-clipboard-target="#textOutput">
                     <i class="bi bi-clipboard"></i>
@@ -74,7 +74,7 @@
             </div>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 px-3">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
                         <div class="text-white nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
@@ -207,6 +207,54 @@
         </div>
     </div>
 
+    <script type="text/javascript">
+        const toolName = document.getElementById("toolName");
+        const textInput = document.getElementById("textInput");
+        const textPassword = document.getElementById("textPassword");
+        const textOutput = document.getElementById("textOutput");
+        const boxPassword = document.getElementById("boxPassword");
+        const inputTextLinesAndChars = document.getElementById("inputTextLinesAndChars");
+        const outputTextLinesAndChars = document.getElementById("outputTextLinesAndChars");
+
+        let currentTool = null;
+        let currentMode = null;
+
+        const getInputText = () => textInput.value;
+        const getOutputText = () => textOutput.value;
+        const getPassword = () => textPassword.value;
+        const getStoredPassword = () => localStorage.getItem(`password_for_${currentTool}`);
+        const getTool = () => localStorage.getItem('tool') ?? "Base64";
+        const getMode = () => localStorage.getItem('mode') ?? "Encode";
+
+        const setToolName = (text) => toolName.innerText = text;
+        const setOutputText = (text) => textOutput.value = text;
+        const setPasswordText = (text) => textPassword.value = text;
+        const setPasswordBoxHidden = (hidden) => boxPassword.classList.toggle('d-none', hidden);
+        const setStoredPassword = (password) => localStorage.setItem(`password_for_${currentTool}`, password);
+
+        const setTool = (tool, mode) => {
+            currentTool = tool;
+            currentMode = mode;
+
+            const toolName = `${currentTool} - ${currentMode}`;
+            setToolName(toolName);
+
+            setPasswordBoxHidden(!['Base64 Xor', 'AES256'].includes(currentTool));
+            const storedPassword = getStoredPassword();
+            if (storedPassword != null) {
+                setPasswordText(storedPassword);
+            }
+        }
+
+        const changeTheme = () => {
+            theme = theme == 'light' ? 'dark' : 'light';
+            setTheme(theme);
+            updateThemeIcon(theme);
+        }
+
+        setTool(getTool(), getMode());
+    </script>
+
     <script type="text/javascript" src="./assets/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="./assets/js/clipboard.min.js"></script>
     <script type="text/javascript" src="./assets/js/base64.min.js"></script>
@@ -271,13 +319,6 @@
     </script>
 
     <script type="text/javascript">
-
-        const changeTheme = () => {
-            theme = theme == 'light' ? 'dark' : 'light';
-            setTheme(theme);
-            updateThemeIcon(theme);
-        }
-
         const toastBoxTextCopied = document.getElementById('toastBoxTextCopied');
         const toastTextCopied = bootstrap.Toast.getOrCreateInstance(toastBoxTextCopied);
 
@@ -289,33 +330,6 @@
             textOutput.blur();
         });
 
-        const toolName = document.getElementById("toolName");
-        const textInput = document.getElementById("textInput");
-        const textPassword = document.getElementById("textPassword");
-        const textOutput = document.getElementById("textOutput");
-        const boxPassword = document.getElementById("boxPassword");
-        const inputTextLinesAndChars = document.getElementById("inputTextLinesAndChars");
-        const outputTextLinesAndChars = document.getElementById("outputTextLinesAndChars");
-
-        let currentTool = null;
-        let currentMode = null;
-
-        const getInputText = () => textInput.value;
-        const getOutputText = () => textOutput.value;
-        const getPassword = () => textPassword.value;
-        const getStoredPassword = () => localStorage.getItem(`password_for_${currentTool}`);
-        const getTool = () => localStorage.getItem('tool') ?? "Base64";
-        const getMode = () => localStorage.getItem('mode') ?? "Encode";
-
-        const setToolName = (text) => toolName.innerText = text;
-        const setOutputText = (text) => textOutput.value = text;
-        const setPasswordText = (text) => textPassword.value = text;
-        const setPasswordBoxHidden = (hidden) => boxPassword.classList.toggle('d-none', hidden);
-        const setStoredPassword = (password) => localStorage.setItem(`password_for_${currentTool}`, password);
-        const setToolAndMode = () => {
-            localStorage.setItem('tool', currentTool);
-            localStorage.setItem('mode', currentMode);
-        }
         const setLinesAndChars = (element, text) => {
             const characters = text.length;
             const lines = text.split('\n').length;
@@ -332,23 +346,13 @@
         }
 
         const changeTool = (tool, mode) => {
-            currentTool = tool;
-            currentMode = mode;
-
-            const storedPassword = getStoredPassword();
-            if (storedPassword != null) {
-                setPasswordText(storedPassword);
-            }
-
-            setToolAndMode();
-            setPasswordBoxHidden(!['Base64 Xor', 'AES256'].includes(currentTool));
+            setTool(tool, mode);
+            localStorage.setItem('tool', currentTool);
+            localStorage.setItem('mode', currentMode);
             processTool();
         }
 
         const processTool = () => {
-            const toolName = `${currentTool} - ${currentMode}`;
-            setToolName(toolName);
-
             const inputText = getInputText();
 
             if (inputText.length == 0) {
@@ -398,8 +402,6 @@
             setStoredPassword(getPassword());
             processTool();
         });
-
-        changeTool(getTool(), getMode());
 
     </script>
 </body>
