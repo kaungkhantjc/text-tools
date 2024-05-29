@@ -28,6 +28,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 
     <style>
+        /* apply Inter font */
         body {
             font-family: "Inter", sans-serif;
             font-optical-sizing: auto;
@@ -48,13 +49,19 @@
             }
         }
 
-        const setTheme = (theme) => {
+        const setTheme = (theme, persistent = true) => {
             document.documentElement.setAttribute('data-bs-theme', theme);
-            localStorage.setItem('theme', theme);
+            if (persistent) localStorage.setItem('theme', theme);
         }
 
+        /*
+        * To prevent theme flickering,
+        * apply stored theme immediately after the <html> tag is rendered.
+        * Since the themeIcon element isn't available yet,
+        * we'll handle the themeIcon separately.
+        */
         let theme = localStorage.getItem('theme') ?? 'light';
-        setTheme(theme);
+        setTheme(theme, false);
     </script>
 </head>
 
@@ -134,21 +141,23 @@
                         </div>
                         <ul class="dropdown-menu">
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('Base64 Xor', 'Encode')">Base64 Xor
-                                    Encode</div>
+                                <div class="dropdown-item" onclick="changeTool('Base64 Xor', 'Encrypt')">Base64 Xor
+                                    Encrypt</div>
                             </li>
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('Base64 Xor', 'Decode')">Base64 Xor
-                                    Decode</div>
+                                <div class="dropdown-item" onclick="changeTool('Base64 Xor', 'Decrypt')">Base64 Xor
+                                    Decrypt</div>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('AES256', 'Encode')">AES256 Encode</div>
+                                <div class="dropdown-item" onclick="changeTool('AES256', 'Encrypt')">AES256 Encrypt
+                                </div>
                             </li>
                             <li>
-                                <div class="dropdown-item" onclick="changeTool('AES256', 'Decode')">AES256 Decode</div>
+                                <div class="dropdown-item" onclick="changeTool('AES256', 'Decrypt')">AES256 Decrypt
+                                </div>
                             </li>
                         </ul>
                     </li>
@@ -162,10 +171,6 @@
                 <button class="btn btn-primary" onclick="changeTheme()">
                     <i id="themeIcon" class="bi bi-moon-stars-fill"></i>
                 </button>
-
-                <script type="text/javascript">
-                    updateThemeIcon(theme);
-                </script>
             </div>
         </div>
     </nav>
@@ -208,6 +213,9 @@
     </div>
 
     <script type="text/javascript">
+        updateThemeIcon(theme);
+
+        // Declare element references
         const toolName = document.getElementById("toolName");
         const textInput = document.getElementById("textInput");
         const textPassword = document.getElementById("textPassword");
@@ -236,13 +244,14 @@
             currentTool = tool;
             currentMode = mode;
 
-            const toolName = `${currentTool} - ${currentMode}`;
-            setToolName(toolName);
+            setToolName(`${currentTool} - ${currentMode}`);
 
-            setPasswordBoxHidden(!['Base64 Xor', 'AES256'].includes(currentTool));
-            const storedPassword = getStoredPassword();
-            if (storedPassword != null) {
-                setPasswordText(storedPassword);
+            // Tools, except for encryption and decryption, do not require password
+            const isPasswordHidden = !['Base64 Xor', 'AES256'].includes(currentTool);
+            setPasswordBoxHidden(isPasswordHidden);
+
+            if (!isPasswordHidden) {
+                setPasswordText(getStoredPassword());
             }
         }
 
@@ -261,6 +270,7 @@
     <script type="text/javascript" src="./assets/js/AES256.min.js"></script>
 
     <script type="text/javascript">
+        // codes for various tools
 
         const encodeBase64 = (text) => Base64.encode(text);
         const decodeBase64 = (text) => Base64.decode(text);
@@ -310,6 +320,7 @@
     </script>
 
     <script type="text/javascript">
+        // For mobile view, collapse navbar when a nav link is clicked
         const navLinks = document.querySelectorAll('div#navbarSupportedContent .nav-item .dropdown-item');
         const menuToggle = document.getElementById('navbarSupportedContent');
         const bsCollapse = bootstrap.Collapse.getOrCreateInstance(menuToggle, { toggle: false });
@@ -336,6 +347,10 @@
             element.innerText = `${lines} lines, ${characters} characters`;
         }
 
+        /* 
+        * we use try catch with callback function
+        * since some tools like AES256 may throw exception
+        */
         const setOutputTextSafely = (func) => {
             try {
                 setOutputText(func());
