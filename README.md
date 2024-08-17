@@ -1,13 +1,18 @@
 # Text Tools
 
-[Text Tools](https://kaungkhantjc.github.io/text-tools) is a collection of JavaScript (browser) based text processing tools.
+[![pages-build-deployment](https://github.com/kaungkhantjc/text-tools/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/kaungkhantjc/text-tools/actions/workflows/pages/pages-build-deployment)
 
-Local
+[![Netlify Status](https://api.netlify.com/api/v1/badges/fad11001-b5ac-4e3a-9f31-c4b2a321d966/deploy-status)](https://app.netlify.com/sites/jctext/deploys)
+
+[Text Tools](https://kaungkhantjc.github.io/text-tools) is a collection of JavaScript (browser) based text processing tools.
 
 ## How to use
 
-Visit
-<https://kaungkhantjc.github.io/text-tools>.
+Just visit one of the following URLs.
+
+- <https://kaungkhantjc.github.io/text-tools>
+
+- <https://jctext.netlify.app>
 
 ## Screenshots
 
