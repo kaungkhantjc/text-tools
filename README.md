@@ -31,6 +31,16 @@ Just visit one of the following URLs.
 |  Base64 Xor  | Encrypt, Decrypt  |
 |  AES256  | Encrypt, Decrypt  |
 
+### Credits
+
+- Bootstrap (<https://getbootstrap.com>)
+- Bootstrap icons (<https://icons.getbootstrap.com>)
+- Inter font (<https://fonts.google.com/specimen/Inter>)
+- Clipboard JS (<https://clipboardjs.com>)
+- Base64 JS (<https://github.com/dankogai/js-base64>)
+- HE JS (<https://github.com/mathiasbynens/he>)
+- AES256 JS (<https://github.com/mervick/aes-everywhere>)
+
 ### Contributing
 
 We'd love to accept your patches and contributions to this project. All submissions, including submissions by project members, require review. We
